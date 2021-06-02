@@ -1,0 +1,67 @@
+extends layout
+
+block content
+  .container-fluid
+    h1 Registrarse en una microtarea
+    - var peers = {1: 'A', 2: 'B', 3: 'C'}
+    - each peer, chain in peers
+      h3 Peer #{peer}
+      .row.row-horizon
+        - var blocks = []
+        - blocks.push({block: 1, chain: chain, nonce: 7466, coinbasevalue: 'cef47dd8a87385d5d993aa387304dd0ceb294f2fa7d917a9464653382a18f3f8', coinbaseto: 'Anders', txs: [], previous: '0000000000000000000000000000000000000000000000000000000000000000'})
+        - blocks.push({block: 2, chain: chain, nonce: 112440, coinbasevalue: '09787535dfa1d37ad9da8a391c1b85a6703340d87f6401d37fbe66219112c80e', coinbaseto: 'Anders', txs: [{value: '84d4dce0d11bc319bc61143cd0849a1464cd7dcef4c73393d155fb27879df26b', from: 'Anders', to: 'Sophia'},{value: '0c030df5a4e7477d218012c0121ebce6d61bb8dc46e0a6c4f8e1cc8091b946a5', from: 'Anders', to: 'Lucas'},{value: 'da53a96cecabd281faf24f23c162b8eadfe72b58816e7625e76459eefb51743a', from: 'Anders', to: 'Emily'},{value: '9ff18ebe7449349f358e3af0b57cf7a032c1c6b2272cb2656ff85eb112232f16', from: 'Anders', to: 'Madison'}], previous: '00004f0161bf7fc7b56a3cb2aec8942abed29bd03a2b38e4e7f6cf916fa9b86c'})
+        - blocks.push({block: 3, chain: chain, nonce: 195233, coinbasevalue: 'd2fd486a78ab14fc6a6b2c4b6cfe0df3f3027229f63a3f96e03e45f680a0be4e', coinbaseto: 'Anders', txs: [{value: 'ae978aa10c628b27427ff2615ad925abdf4171fc7b4d1f7067bd35b23960d371', from: 'Emily', to: 'Jackson'},{value: 'dea210f058b407db5c1b5ea89b2e42a57221c003dba55e2f1776a75a3254d386', from: 'Madison', to: 'Jackson'},{value: '46bd6365a1d6aa55f91bbae909c8580642235ac9bda1c053386359415afbdb6c', from: 'Lucas', to: 'Grace'}], previous: '0000ccaae6c85cff0b1dfd9208d8a915319d3f792a3a1d8d9601209f4645d339'})
+        - blocks.push({block: 4, chain: chain, nonce: 5870, coinbasevalue: 'Excel', coinbaseto: 'Anders', txs: [{value: 'Alberto', empleador: 'Jackson', to: 'Ryan'},{value: 'Ricardo', from: 'Emily', to: 'Madison'},{value: 'Emily', from: 'Sophia', to: 'Jackson'}], previous: '0000829fd36d209f346f0570d1fc8de46a07789c4b0353003e97610125f8a613'})
+        - blocks.push({block: 5, chain: chain, nonce: 25919, coinbasevalue: 'Edición con photoshop', coinbaseto: 'Sophia', txs: [{value: 'Sebastian', from: 'Jackson', to: 'Alexander'},{value: 'Alexander', from: 'Ryan', to: 'Carter'},{value: 'Adriana', from: 'Ryan', to: 'Riley'},{value: 'Lucía', from: 'Grace', to: 'Katherine'}], previous: '000023e3dc27f36eeabd1a8e9fea11905c4d09d0e49f7bb1d5195807ca63f355'})
+        each block in blocks
+          .col-xs-7
+            include includes/coinbaseblock.jade
+
+  script.
+    $(function() {
+      setup(1, 1);
+      setup(2, 1);
+      setup(3, 1);
+      setup(4, 1);
+      setup(5, 1);
+
+      setup(1, 2);
+      setup(2, 2);
+      setup(3, 2);
+      setup(4, 2);
+      setup(5, 2);
+
+      setup(1, 3);
+      setup(2, 3);
+      setup(3, 3);
+      setup(4, 3);
+      setup(5, 3);
+    });
+
+    function getText(block, chain) {
+      var s = $('#block'+block+'chain'+chain+'number').val() +
+              $('#block'+block+'chain'+chain+'nonce').val() +
+              $('#block'+block+'chain'+chain+'coinbasevalue').val() +
+              $('#block'+block+'chain'+chain+'coinbaseto').val();
+
+      for (var x=0; $('#block'+block+'chain'+chain+'tx'+x+'value').length > 0; x++) {
+        s = s + $('#block'+block+'chain'+chain+'tx'+x+'value').val() +
+                $('#block'+block+'chain'+chain+'tx'+x+'from').val() +
+                $('#block'+block+'chain'+chain+'tx'+x+'to').val();
+      }
+      s = s + $('#block'+block+'chain'+chain+'previous').val();
+      return s;
+    }
+
+    function setup(block, chain) {
+      updateHash(block, chain);
+      $('#block'+block+'chain'+chain+'mineButton').click(function(e) {
+          e.preventDefault();
+          var l = Ladda.create(this);
+          l.start();
+          setTimeout(function() {
+              mine(block, chain, true);
+              l.stop();
+            }, 250); // give UI time to update
+        });
+    }
